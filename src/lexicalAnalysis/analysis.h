@@ -1,9 +1,8 @@
-#ifndef ANALYSIS_H100
-#define ANALYSIS_H100
+#ifndef ANALYSIS_H1
+#define ANALYSIS_H1
 
-// #include <string>
-// std::string analysis(std::string);
+#include <string>
 
-int prova();
+std::string analysis(std::string);
 
 #endif

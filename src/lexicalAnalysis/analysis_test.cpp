@@ -4,6 +4,7 @@
 #include "analysis.h"
 
 int main() {
-    std::cout << prova() << std::endl;
+    std::string value = "12 12 13";
+    std::cout << analysis(value) << std::endl;
     return 0;
 }

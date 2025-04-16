@@ -1,5 +1,5 @@
 #include <cstddef>
-#include <stdio.h>
+#include <iostream>
 #include <string>
 #include "analysis.h"
 
@@ -10,18 +10,24 @@ int prova() {
 bool isNumber(std::string token);
 
 std::string analysis(std::string text) {
-    std::string* token;
+    std::string token;
 
     while(text != "\0") {
         size_t position = text.find(" ");
+        if(position == 0 || position > text.length()) {
+            position = text.length();
+        }
+
         std::string thisToken = text.substr(0, position); 
 
+            text = text.substr(position+1, text.length());
+
         if(isNumber(thisToken)){
-            return thisToken;
+            token += thisToken;
         }
-        return "";
+        std::cout << position << std::endl;
     }
-    return "";
+    return token;
 }
 
 bool isNumber(std::string token) {
