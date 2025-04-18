@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-#include <cstddef>
-#include <iostream>
-=======
 #include <iostream>
 #include <stdio.h>
->>>>>>> a4d60d4 (understand)
 #include <string>
 #include "analysis.h"
 
@@ -12,12 +7,19 @@ int prova() {
     return 1;
 }
 
-const std::string assing = "assing", ifV = "if", elseV = "else", doV = "do";
+constexpr unsigned int str2int(const char* str, int h = 0){
+    return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
+}
+
 
 bool isNumber(std::string token);
 
-struct Tokens* analysis(std::string text) {
-    struct Tokens* token;
+Tokens* analysis(std::string text) {
+    std::string enum {
+        assing = 0
+    }type;
+
+    Tokens* token;
     token = (Tokens*)malloc(sizeof(Tokens) * 3);
     int count = 0; 
 
@@ -37,20 +39,20 @@ struct Tokens* analysis(std::string text) {
             token[count].Value = thisToken;
         }
 
-        switch (thisToken==) {
-            case assing:
+        switch (str2int(thisToken)) {
+            case str2int(assing):
                 token[count].Value = thisToken;
                 token[count].Token = 1;
             break;
-            case ifV:
+            case str2int(ifV):
                 token[count].Value = thisToken;
                 token[count].Token = 1;
             break;
-            case elseV:
+            case str2int(elseV):
                 token[count].Value = thisToken;
                 token[count].Token = 1;
             break;
-            case doV:
+            case str2int(doV):
                 token[count].Value = thisToken;
                 token[count].Token = 1;
             break;

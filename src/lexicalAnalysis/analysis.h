@@ -3,11 +3,11 @@
 
 #include <string>
 
-struct Tokens {
+typedef struct  {
     int Token;
     std::string Value;
-};
+}Tokens;
 
-struct Tokens* analysis(std::string);
+Tokens* analysis(std::string);
 
 #endif
