@@ -12,6 +12,8 @@ int prova() {
     return 1;
 }
 
+const std::string assing = "assing", ifV = "if", elseV = "else", doV = "do";
+
 bool isNumber(std::string token);
 
 struct Tokens* analysis(std::string text) {
@@ -26,7 +28,7 @@ struct Tokens* analysis(std::string text) {
             position = text.length();
         }
 
-        std::string thisToken = text.substr(0, position); 
+        const std::string thisToken = text.substr(0, position); 
         text = text.substr(position+1, text.length());
 
         std::cout<< thisToken << "  " << position << " " << count << std::endl;
@@ -34,15 +36,36 @@ struct Tokens* analysis(std::string text) {
             token[count].Token = 0;
             token[count].Value = thisToken;
         }
+
+        switch (thisToken==) {
+            case assing:
+                token[count].Value = thisToken;
+                token[count].Token = 1;
+            break;
+            case ifV:
+                token[count].Value = thisToken;
+                token[count].Token = 1;
+            break;
+            case elseV:
+                token[count].Value = thisToken;
+                token[count].Token = 1;
+            break;
+            case doV:
+                token[count].Value = thisToken;
+                token[count].Token = 1;
+            break;
+        }
+
         count++;
     }
     return token;
 }
 
 bool isNumber(std::string token) {
-    if(token[0] >= '0' && token[0] <= '9') {
-        return true;
-    }
+    for(int i = 0; i < token.length(); i++)
+        if(token[i] < '0' && token[i] > '9') 
+            return false;
+        
 
-    return false;
+    return true;
 }
