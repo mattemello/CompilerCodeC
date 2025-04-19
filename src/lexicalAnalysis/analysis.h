@@ -8,6 +8,11 @@ typedef struct  {
     std::string Value;
 }Tokens;
 
-Tokens* analysis(std::string);
+typedef struct{
+    int dimensioArray;
+    Tokens* token;
+}ReturnValue;
+
+ReturnValue analysis(std::string);
 
 #endif

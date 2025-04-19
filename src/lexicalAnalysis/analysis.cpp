@@ -1,72 +1,96 @@
+#include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <stdio.h>
 #include <string>
 #include "analysis.h"
 
-int prova() {
-    return 1;
-}
-
 constexpr unsigned int str2int(const char* str, int h = 0){
     return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
 }
 
-
 bool isNumber(std::string token);
 
-Tokens* analysis(std::string text) {
-    std::string enum {
-        assing = 0
-    }type;
+size_t searchSeparator(std::string text) {
+    for(size_t i = 0; i < text.length(); i++){
+        if((text[i] < 'a' || text[i] > 'z')&& (text[i] < '0' || text[i] > '9') && (text[i] < 'A' || text[i] > 'Z')){
+            return i;
+        }
+    }
 
-    Tokens* token;
-    token = (Tokens*)malloc(sizeof(Tokens) * 3);
+    return text.length();
+}
+
+ReturnValue analysis(std::string text) {
+    int dimensionToken = 3;
+    Tokens* token = (Tokens*)malloc(sizeof(Tokens) * (dimensionToken));
     int count = 0; 
 
     while(text != "\0") {
-        size_t position = text.find(" ");
+        if(count >= dimensionToken) {
+            dimensionToken = dimensionToken + 8;
+            token = (Tokens*)realloc(token, (sizeof(Tokens)*(dimensionToken)));
+
+        }
+        size_t position = searchSeparator(text);
+        if(position == 0){
+            //todo: control here if the position is a space or other 
+            text = text.substr(position+1, text.length());
+            continue;
+        }
     
-        if(position > text.length()){
-            position = text.length();
+        const std::string thisToken = text.substr(0, position); 
+        if(position >= text.length()){
+            text = "\0";
+        }else{
+            text = text.substr(position+1, text.length());
         }
 
-        const std::string thisToken = text.substr(0, position); 
-        text = text.substr(position+1, text.length());
-
-        std::cout<< thisToken << "  " << position << " " << count << std::endl;
         if(isNumber(thisToken)){
             token[count].Token = 0;
             token[count].Value = thisToken;
         }
 
-        switch (str2int(thisToken)) {
-            case str2int(assing):
+        switch (str2int(thisToken.c_str())) {
+            case str2int("assing"):
                 token[count].Value = thisToken;
-                token[count].Token = 1;
+                token[count].Token = 259;
             break;
-            case str2int(ifV):
+            case str2int("to"):
                 token[count].Value = thisToken;
-                token[count].Token = 1;
+                token[count].Token = 260;
             break;
-            case str2int(elseV):
+            case str2int("if"):
                 token[count].Value = thisToken;
-                token[count].Token = 1;
+                token[count].Token = 261;
             break;
-            case str2int(doV):
+            case str2int("else"):
                 token[count].Value = thisToken;
-                token[count].Token = 1;
+                token[count].Token = 262;
+            break;
+            case str2int("do"):
+                token[count].Value = thisToken;
+                token[count].Token = 263;
             break;
         }
 
+        //todo: control the position
+
         count++;
     }
-    return token;
+
+    ReturnValue value;
+    value.token = token;
+    value.dimensioArray = dimensionToken;
+
+    return value;
 }
 
 bool isNumber(std::string token) {
-    for(int i = 0; i < token.length(); i++)
-        if(token[i] < '0' && token[i] > '9') 
+    for(int i = 0; i < token.length(); i++){
+        if(token[i] < '0' || token[i] > '9') 
             return false;
+    }
         
 
     return true;
