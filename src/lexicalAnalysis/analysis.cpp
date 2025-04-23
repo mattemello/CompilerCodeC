@@ -1,19 +1,19 @@
 #include <cstdlib>
+#include <iostream>
+#include <ostream>
 #include <stdio.h>
 #include <string>
 #include "analysis.h"
+
 
 constexpr unsigned int str2int(const char* str, int h = 0){
     return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
 }
 
-bool isNumber(std::string token);
+Tokens controlString(std::string);
+Tokens controlSimbol(char);
 
-bool controlValuePosition(std::string txt, int position){
-    if(txt[position] == ' '){
-        return false;
-    }
-}
+bool isNumber(std::string token);
 
 size_t searchSeparator(std::string text) {
     for(size_t i = 0; i < text.length(); i++){
@@ -36,79 +36,116 @@ ReturnValue analysis(std::string text) {
             token = (Tokens*)realloc(token, (sizeof(Tokens)*(dimensionToken)));
 
         }
+
         size_t position = searchSeparator(text);
+
         if(position == 0){
-            //todo: control here if the position is a space or other 
-            text = text.substr(position+1, text.length());
+            if(text[position] != ' '){
+                switch (text[position]) {
+                    case ':':
+                        if(text[position+1] != '='){
+                            //ERROR
+                        }
+                        token[count].Token = 269;
+                        token[count].Value = ":=";
+                        position++;
+                    break;
+                    case '|':
+                        if(text[position+1] != '|'){
+                            //ERROR
+                        }
+                        token[count].Token = 270;
+                        token[count].Value = "||";
+                        position++;
+                        break;
+                    case '&':
+                        if(text[position+1] != '&'){
+                            //ERROR
+                        }
+                        token[count].Token = 271;
+                        token[count].Value = "&&";
+                        position++;
+                        break;
+                    default:
+                        Tokens tt = controlSimbol(text[position]);
+                        token[count].Token = tt.Token;
+                        break;
+
+                }
+                count++;
+
+            }
+
+
+            position++;
+            text = text.substr(position, text.length());
             continue;
         }
     
         const std::string thisToken = text.substr(0, position); 
-        if(position >= text.length()){
-            text = "\0";
-        }else{
-            text = text.substr(position+1, text.length());
-        }
 
         if(isNumber(thisToken)){
             token[count].Token = 0;
             token[count].Value = thisToken;
         }
 
-        switch (str2int(thisToken.c_str())) {
-            case str2int("assing"):
-                token[count].Value = thisToken;
-                token[count].Token = 259;
-            break;
-            case str2int("to"):
-                token[count].Value = thisToken;
-                token[count].Token = 260;
-            break;
-            case str2int("if"):
-                token[count].Value = thisToken;
-                token[count].Token = 261;
-            break;
-            case str2int("else"):
-                token[count].Value = thisToken;
-                token[count].Token = 262;
-            break;
-            case str2int("do"):
-                token[count].Value = thisToken;
-                token[count].Token = 263;
-            break;
-            case str2int("for"):
-                token[count].Value = thisToken;
-                token[count].Token = 264;
-            break;
-            case str2int("begin"):
-                token[count].Value = thisToken;
-                token[count].Token = 265;
-            break;
-            case str2int("end"):
-                token[count].Value = thisToken;
-                token[count].Token = 266;
-            break;
-            case str2int("print"):
-                token[count].Value = thisToken;
-                token[count].Token = 267;
-            break;
-            case str2int("read"):
-                token[count].Value = thisToken;
-                token[count].Token = 2628;
-            break;
-            default:
-                //todo: control if it can be a Id or is a simbol
-            break;
+        token[count] = controlString(thisToken);
+        count++;
+
+        if(text[position] != ' '){
+            switch (text[position]) {
+                case ':':
+                    if(text[position+1] != '='){
+                        //ERROR
+                    }
+                    token[count].Token = 269;
+                    token[count].Value = ":=";
+                    position++;
+                    break;
+                case '|':
+                    if(text[position+1] != '|'){
+                        //ERROR
+                    }
+                    token[count].Token = 270;
+                    token[count].Value = "||";
+                    position++;
+                    break;
+                case '&':
+                    if(text[position+1] != '&'){
+                        //ERROR
+                    }
+                    token[count].Token = 271;
+                    token[count].Value = "&&";
+                    position++;
+                    break;
+                default:
+                    Tokens tt = controlSimbol(text[position]);
+                    token[count].Token = tt.Token;
+                    break;
+            }
+
         }
 
-        //todo: control the position
+        if(position >= text.length()){
+            text = "\0";
+        }else{
+            text = text.substr(position+1, text.length());
+        }
 
         count++;
     }
 
+    if(count >= dimensionToken) {
+        dimensionToken = dimensionToken + 1;
+        token = (Tokens*)realloc(token, (sizeof(Tokens)*(dimensionToken)));
+    }
+
+    token[count].Token = -1;
+
     ReturnValue value;
     value.token = token;
-    value.dimensioArray = dimensionToken;
+    value.dimensioArray = count;
+
 
     return value;
 }
@@ -121,4 +158,109 @@ bool isNumber(std::string token) {
         
 
     return true;
+}
+
+Tokens controlSimbol(char simb) {
+    Tokens token;
+    std::string voidNull = "";
+
+    switch (simb) {
+        case '!':
+            token.Token = 33;
+            break;
+        case '(':
+            token.Token = 40;
+            break;
+        case ')':
+            token.Token = 41;
+            break;
+        case '[':
+            token.Token = 91;
+            break;
+        case ']':
+            token.Token = 93;
+            break;
+        case '{':
+            token.Token = 123;
+            break;
+        case '}':
+            token.Token = 125;
+            break;
+        case '+':
+            token.Token = 43;
+            break;
+        case '-':
+            token.Token = 45;
+            break;
+        case '*':
+            token.Token = 42;
+            break;
+        case '/':
+            token.Token = 47;
+            break;
+        case ';':
+            token.Token = 59;
+            break;
+        case ',':
+            token.Token = 44;
+            break;
+
+        default:
+            //ERROR
+        break;
+    }
+
+    return token;
+}
+
+Tokens controlString(std::string thisToken){
+    Tokens token;
+
+    switch (str2int(thisToken.c_str())) {
+        case str2int("assing"):
+            token.Value = thisToken;
+            token.Token = 259;
+            break;
+        case str2int("to"):
+            token.Value = thisToken;
+            token.Token = 260;
+            break;
+        case str2int("if"):
+            token.Value = thisToken;
+            token.Token = 261;
+            break;
+        case str2int("else"):
+            token.Value = thisToken;
+            token.Token = 262;
+            break;
+        case str2int("do"):
+            token.Value = thisToken;
+            token.Token = 263;
+            break;
+        case str2int("for"):
+            token.Value = thisToken;
+            token.Token = 264;
+            break;
+        case str2int("begin"):
+            token.Value = thisToken;
+            token.Token = 265;
+            break;
+        case str2int("end"):
+            token.Value = thisToken;
+            token.Token = 266;
+            break;
+        case str2int("print"):
+            token.Value = thisToken;
+            token.Token = 267;
+            break;
+        case str2int("read"):
+            token.Value = thisToken;
+            token.Token = 2628;
+            break;
+        default:
+            //todo: control if it can be a Id or is a simbol
+            break;
+    }
+
+    return token;
 }
