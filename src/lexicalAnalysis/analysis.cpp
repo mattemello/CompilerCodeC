@@ -1,6 +1,4 @@
-#include <cstddef>
 #include <cstdlib>
-#include <iostream>
 #include <stdio.h>
 #include <string>
 #include "analysis.h"
@@ -10,6 +8,12 @@ constexpr unsigned int str2int(const char* str, int h = 0){
 }
 
 bool isNumber(std::string token);
+
+bool controlValuePosition(std::string txt, int position){
+    if(txt[position] == ' '){
+        return false;
+    }
+}
 
 size_t searchSeparator(std::string text) {
     for(size_t i = 0; i < text.length(); i++){
@@ -71,6 +75,29 @@ ReturnValue analysis(std::string text) {
             case str2int("do"):
                 token[count].Value = thisToken;
                 token[count].Token = 263;
+            break;
+            case str2int("for"):
+                token[count].Value = thisToken;
+                token[count].Token = 264;
+            break;
+            case str2int("begin"):
+                token[count].Value = thisToken;
+                token[count].Token = 265;
+            break;
+            case str2int("end"):
+                token[count].Value = thisToken;
+                token[count].Token = 266;
+            break;
+            case str2int("print"):
+                token[count].Value = thisToken;
+                token[count].Token = 267;
+            break;
+            case str2int("read"):
+                token[count].Value = thisToken;
+                token[count].Token = 2628;
+            break;
+            default:
+                //todo: control if it can be a Id or is a simbol
             break;
         }
 
