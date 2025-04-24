@@ -31,6 +31,7 @@ ReturnValue analysis(std::string text) {
     int count = 0; 
 
     while(text != "\0") {
+        std::cout << text << std::endl;
         if(count >= dimensionToken) {
             dimensionToken = dimensionToken + 8;
             token = (Tokens*)realloc(token, (sizeof(Tokens)*(dimensionToken)));
@@ -39,6 +40,8 @@ ReturnValue analysis(std::string text) {
 
         size_t position = searchSeparator(text);
 
+        // todo: control for the operator
+
         if(position == 0){
             if(text[position] != ' '){
                 switch (text[position]) {
@@ -46,26 +49,65 @@ ReturnValue analysis(std::string text) {
                         if(text[position+1] != '='){
                             //ERROR
                         }
-                        token[count].Token = 269;
-                        token[count].Value = ":=";
                         position++;
+                        if(text[position+1] == '='){
+                            //ERROR
+                        }
+                        token[count].Token = 269;
+                        token[count].Value = (char*)malloc(sizeof(char)*2);
+                        token[count].Value = (char*)":=";
                     break;
                     case '|':
                         if(text[position+1] != '|'){
                             //ERROR
                         }
-                        token[count].Token = 270;
-                        token[count].Value = "||";
                         position++;
+                        if(text[position+1] == '|'){
+                            //ERROR
+                        }
+                        token[count].Token = 270;
+                        token[count].Value = (char*)malloc(sizeof(char)*2);
+                        token[count].Value = (char*)"||";
                         break;
                     case '&':
                         if(text[position+1] != '&'){
                             //ERROR
                         }
-                        token[count].Token = 271;
-                        token[count].Value = "&&";
                         position++;
+                        if(text[position+1] == '&'){
+                            //ERROR
+                        }
+                        token[count].Token = 271;
+                        token[count].Value = (char*)malloc(sizeof(char)*2);
+                        token[count].Value = (char*)"&&";
                         break;
+                    case '<':
+                        if(text[position+1] == '=' || text[position+1] == '>'){
+                            token[count].Value = text.substr(position, position+1).c_str();
+                            position++;
+                        }else{
+                            token[count].Value = "<";
+                        }
+                        token[count].Token = 258;
+                    break;
+                    case '>':
+                        if(text[position+1] == '='){
+                            token[count].Value = text.substr(position, position+1);
+                            position++;
+                        }else{
+                            token[count].Value = ">";
+                        }
+                        token[count].Token = 258;
+                    break;
+                    case '=':
+                        if(text[position+1] == '='){
+                            token[count].Value = text.substr(position, position+1);
+                            position++;
+                        }else{
+                            //ERROR
+                        }
+                        token[count].Token = 258;
+                    break;
                     default:
                         Tokens tt = controlSimbol(text[position]);
                         token[count].Token = tt.Token;
@@ -85,11 +127,11 @@ ReturnValue analysis(std::string text) {
         const std::string thisToken = text.substr(0, position); 
 
         if(isNumber(thisToken)){
-            token[count].Token = 0;
-            token[count].Value = thisToken;
+            token[count].Token = 256;
+            token[count].Value = thisToken.c_str;
+        }else{
+            token[count] = controlString(thisToken);
         }
-
-        token[count] = controlString(thisToken);
         count++;
 
         if(text[position] != ' '){
@@ -118,6 +160,33 @@ ReturnValue analysis(std::string text) {
                     token[count].Value = "&&";
                     position++;
                     break;
+                case '<':
+                    if(text[position+1] == '=' || text[position+1] == '>'){
+                        token[count].Value = text.substr(position, position+1);
+                        position++;
+                    }else{
+                        token[count].Value = "<";
+                    }
+                    token[count].Token = 258;
+                    break;
+                case '>':
+                    if(text[position+1] == '='){
+                        token[count].Value = text.substr(position, position+1);
+                        position++;
+                    }else{
+                        token[count].Value = ">";
+                    }
+                    token[count].Token = 258;
+                    break;
+                case '=':
+                    if(text[position+1] == '='){
+                        token[count].Value = text.substr(position, position+1);
+                        position++;
+                    }else{
+                        //ERROR
+                    }
+                    token[count].Token = 258;
+                    break;
                 default:
                     Tokens tt = controlSimbol(text[position]);
                     token[count].Token = tt.Token;
@@ -126,8 +195,8 @@ ReturnValue analysis(std::string text) {
 
         }
 
-        if(position >= text.length()){
-            text = "\0";
+        if(position >= text.length() || text[position] == '\0'){
+            break;
         }else{
             text = text.substr(position+1, text.length());
         }
@@ -141,6 +210,8 @@ ReturnValue analysis(std::string text) {
     }
 
     token[count].Token = -1;
+    token[count].Value = "EOF";
+    count++;
 
     ReturnValue value;
     value.token = token;
@@ -218,43 +289,43 @@ Tokens controlString(std::string thisToken){
 
     switch (str2int(thisToken.c_str())) {
         case str2int("assing"):
-            token.Value = thisToken;
+            token.Value = thisToken.c_str;
             token.Token = 259;
             break;
         case str2int("to"):
-            token.Value = thisToken;
+            token.Value = thisToken.c_str;
             token.Token = 260;
             break;
         case str2int("if"):
-            token.Value = thisToken;
+            token.Value = thisToken.c_str;
             token.Token = 261;
             break;
         case str2int("else"):
-            token.Value = thisToken;
+            token.Value = thisToken.c_str;
             token.Token = 262;
             break;
         case str2int("do"):
-            token.Value = thisToken;
+            token.Value = thisToken.c_str;
             token.Token = 263;
             break;
         case str2int("for"):
-            token.Value = thisToken;
+            token.Value = thisToken.c_str;
             token.Token = 264;
             break;
         case str2int("begin"):
-            token.Value = thisToken;
+            token.Value = thisToken.c_str;
             token.Token = 265;
             break;
         case str2int("end"):
-            token.Value = thisToken;
+            token.Value = thisToken.c_str;
             token.Token = 266;
             break;
         case str2int("print"):
-            token.Value = thisToken;
+            token.Value = thisToken.c_str;
             token.Token = 267;
             break;
         case str2int("read"):
-            token.Value = thisToken;
+            token.Value = thisToken.c_str;
             token.Token = 2628;
             break;
         default:

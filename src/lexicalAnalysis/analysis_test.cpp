@@ -11,14 +11,13 @@ int main() {
     for(int i = 0; i < res.dimensioArray; i++){
         std::cout << retV[i].Token << " " << retV[i].Value << " |";
     }
-    std::cout << "---------" << std::endl;
+    std::cout << std::endl << "---------" << std::endl;
     std::cout << "" << std::endl;
 
-    stry = "(34+26( - (2+15-( 27";
+    stry = "else 5 == print < end";
     res = analysis(stry);
 
     retV = res.token;
-    std::cout << "here" << std::endl;
     for(int i = 0; i < res.dimensioArray; i++){
         std::cout << retV[i].Token << " " << retV[i].Value << " i: " << i << std::endl;
     }

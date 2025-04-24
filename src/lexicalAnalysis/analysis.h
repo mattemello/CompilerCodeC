@@ -5,7 +5,7 @@
 
 typedef struct  {
     int Token;
-    std::string Value;
+    char* Value;
 }Tokens;
 
 typedef struct{
